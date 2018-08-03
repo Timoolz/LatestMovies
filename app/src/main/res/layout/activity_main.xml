@@ -6,20 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-
-
-    <!--</android.support.v7.widget.RecyclerView>-->
-
-    <ScrollView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/test_tv"/>
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:id="@+id/rv_movies"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        >
+
+
+    </android.support.v7.widget.RecyclerView>
+
+
 
 </android.support.constraint.ConstraintLayout>
