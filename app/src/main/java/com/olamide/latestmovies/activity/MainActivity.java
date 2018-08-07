@@ -1,10 +1,13 @@
 package com.olamide.latestmovies.activity;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.olamide.latestmovies.Config;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Movie> movieList;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,11 +45,10 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
 
 
 
-        TMDBMoviesService.getMoviesByTopRated(Config.TMDB_API_KEY, new Callback<TMDBMovieResponse>() {
+        TMDBMoviesService.getMoviesBypopularity(Config.TMDB_API_KEY, new Callback<TMDBMovieResponse>() {
             @Override
             public void onResponse(Call<TMDBMovieResponse> call, Response<TMDBMovieResponse> response) {
                 Log.e(TAG, call.request().toString());

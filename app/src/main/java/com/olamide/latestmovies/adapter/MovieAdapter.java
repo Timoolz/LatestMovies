@@ -37,8 +37,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public static class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tv_movie_title)
-        TextView title;
+
         @BindView(R.id.iv_movie)
         ImageView movieImage;
 
@@ -67,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 .placeholder(android.R.drawable.sym_def_app_icon)
                 .error(android.R.drawable.sym_def_app_icon)
                 .into(holder.movieImage);
-        holder.title.setText(movieList.get(position).getTitle());
+
 
 
     }
