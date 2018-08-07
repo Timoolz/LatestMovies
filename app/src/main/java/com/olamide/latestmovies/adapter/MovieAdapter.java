@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
@@ -28,22 +27,44 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private List<Movie> movieList;
     private Context context;
 
-    public MovieAdapter(List<Movie> movies, Context context) {
+    private final MovieAdapterOnClickListener movieClickListener;
+
+    public MovieAdapter(List<Movie> movies, Context context, MovieAdapterOnClickListener movieClickListener) {
         this.movieList = movies;
         this.context = context;
+        this.movieClickListener = movieClickListener;
     }
 
 
+    public void setMovieList(List<Movie> movies){
+        this.movieList = movies;
+        notifyDataSetChanged();
+    }
 
-    public static class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+
+    public interface  MovieAdapterOnClickListener {
+        void onClickListener(Movie movie);
+    }
+
+
+    public  class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
 
         @BindView(R.id.iv_movie)
         ImageView movieImage;
 
-        public MovieAdapterViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
+        public MovieAdapterViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            int adapterPosition = getAdapterPosition();
+            movieClickListener.onClickListener(movieList.get(adapterPosition));
+
         }
     }
 
@@ -52,7 +73,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.movie_item, viewGroup, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.movie_item, viewGroup, false);
 
         return new MovieAdapterViewHolder(view);
     }
@@ -70,6 +91,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
     }
+
+
 
     @Override
     public int getItemCount() {
