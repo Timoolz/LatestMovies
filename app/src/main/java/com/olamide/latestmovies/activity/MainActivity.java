@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
@@ -15,6 +17,7 @@ import com.olamide.latestmovies.network.TMDBMoviesService;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -26,6 +29,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String VIEW_MOVIE_OBJECT = "movieToView";
 
     @BindView(R.id.rv_movies)
     RecyclerView mRecyclerView;
@@ -34,12 +38,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private MovieAdapter mAdapter;
 
+
     // variables to help with pagination
     private int current_page = 1;
     private int total_pages = 1;
 
     // variable to help keep track of category
-    private boolean top_rated = true;
+    private boolean top_rated = false;
 
 
 
@@ -116,9 +121,45 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void onClickListener(Movie movie) {
 
         Intent intent = new Intent(this, MovieDetails.class);
-        intent.putExtra("movieToView", movie.getId());
+        intent.putExtra(VIEW_MOVIE_OBJECT, movie);
 
         startActivity(intent);
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+
+            case R.id.by_rating:
+
+                movieList = new ArrayList<>();
+                getTopRatedMovies();
+
+                return true;
+
+            case R.id.by_popularity:
+                movieList = new ArrayList<>();
+                getPopularMovies();
+                return true;
+
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
 }

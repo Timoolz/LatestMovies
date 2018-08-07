@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">LatestMovies</string>
+    <string name="sort_by_popularity">Popular</string>
+    <string name="sort_by_rating">Top Rated</string>
+    <string name="refresh">Refresh</string>
+    <string name="favourite">Favourite</string>
+    <string name="error">An error has occurred </string>
 </resources>

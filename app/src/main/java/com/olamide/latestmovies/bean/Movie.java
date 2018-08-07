@@ -1,10 +1,13 @@
 package com.olamide.latestmovies.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Movie {
+public class Movie implements Parcelable {
 
     @SerializedName("vote_count")
     private Integer voteCount;
@@ -163,5 +166,58 @@ public class Movie {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(overview);
+        dest.writeString(backdropPath);
+        dest.writeDouble(voteAverage);
+        dest.writeString(releaseDate);
+        dest.writeString(posterPath);
+        dest.writeInt(id);
+        dest.writeInt(voteCount);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeDouble(voteAverage);
+        dest.writeDouble(popularity);
+        dest.writeString(originalLanguage);
+        dest.writeString(originalTitle);
+        dest.writeString(releaseDate);
+        dest.writeByte((byte) (adult ? 1 : 0));
+
+
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            Movie mMovie = new Movie();
+            mMovie.title = source.readString();
+            mMovie.overview = source.readString();
+            mMovie.backdropPath = source.readString();
+            mMovie.voteAverage = source.readDouble();
+            mMovie.releaseDate = source.readString();
+            mMovie.posterPath = source.readString();
+            mMovie.id = source.readInt();
+            mMovie.voteCount = source.readInt();
+            mMovie.video = source.readByte() !=0;
+            mMovie.voteAverage = source.readDouble();
+            mMovie.popularity = source.readDouble();
+            mMovie.originalLanguage = source.readString();
+            mMovie.originalTitle = source.readString();
+            mMovie.setReleaseDate(source.readString());
+            mMovie.adult = source.readByte() !=0;
+
+            return  mMovie;
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }
