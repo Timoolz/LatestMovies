@@ -11,6 +11,7 @@ import android.view.MenuItem;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
+import com.olamide.latestmovies.SortType;
 import com.olamide.latestmovies.adapter.MovieAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.TMDBMovieResponse;
@@ -36,20 +37,23 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @BindView(R.id.rv_movies)
     RecyclerView mRecyclerView;
 
-    private List<Movie> movieList;
+    private List<Movie> movieList = new ArrayList<>();
 
     private MovieAdapter mAdapter;
     GridLayoutManager layoutManager;
 
 
+    // to help regulate loading of more items
+    private boolean loading = false;
+    private int previousItems;
+    private int visibleItemCount;
+    private int totalItemCount;
 
 
-    private int current_page = 1;
-    private int total_pages = 1;
+    private int currentPage = 1;
+    private int totalPages = 1;
 
-    // variable to help keep track of category
-    private boolean top_rated = false;
-
+    private SortType currentCategory = SortType.POPULAR;
 
 
     @Override
@@ -67,10 +71,46 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
 
 
-        if(top_rated){getTopRatedMovies();}
-        else {getPopularMovies();}
+        if(currentCategory.equals(SortType.POPULAR)){
+            getPopularMovies();
+        }
+        else if(currentCategory.equals(SortType.TOP_RATED)) {
+            getTopRatedMovies();
+        }
 
         mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) //check for scroll down
+                {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    previousItems = layoutManager.findFirstVisibleItemPosition();
+
+                    if (!loading) {
+                        loading = true;
+                        if ((visibleItemCount + previousItems) >= totalItemCount) {
+
+                            if (currentPage < totalPages) {
+                                currentPage++;
+                                if(currentCategory.equals(SortType.POPULAR)){
+                                    getPopularMovies();
+                                }
+                                else if(currentCategory.equals(SortType.TOP_RATED)) {
+                                    getTopRatedMovies();
+                                }
+                            }
+                        }
+                        loading = false;
+                    }
+                }
+            }
+        });
+
+
+
 
     }
 
@@ -80,14 +120,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void getPopularMovies(){
 
 
-        TMDBMoviesService.getMoviesBypopularity(Config.TMDB_API_KEY, new Callback<TMDBMovieResponse>() {
+        TMDBMoviesService.getMoviesBypopularity(Config.TMDB_API_KEY, currentPage, new Callback<TMDBMovieResponse>() {
             @Override
             public void onResponse(Call<TMDBMovieResponse> call, Response<TMDBMovieResponse> response) {
                 Log.e(TAG, call.request().toString());
 
                 Log.e(TAG, ReflectionToStringBuilder.toString(response));
-                movieList = response.body().getResults();
+                totalPages = response.body().getTotalPages();
+                movieList.addAll(response.body().getResults());
+
                 mAdapter.setMovieList(movieList);
+
+
 
             }
 
@@ -101,17 +145,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
 
-
     public void getTopRatedMovies(){
 
 
-        TMDBMoviesService.getMoviesByTopRated(Config.TMDB_API_KEY, new Callback<TMDBMovieResponse>() {
+        TMDBMoviesService.getMoviesByTopRated(Config.TMDB_API_KEY, currentPage, new Callback<TMDBMovieResponse>() {
             @Override
             public void onResponse(Call<TMDBMovieResponse> call, Response<TMDBMovieResponse> response) {
                 Log.e(TAG, call.request().toString());
 
                 Log.e(TAG, ReflectionToStringBuilder.toString(response));
-                movieList = response.body().getResults();
+                totalPages = response.body().getTotalPages();
+                movieList.addAll(response.body().getResults());
+
                 mAdapter.setMovieList(movieList);
 
             }
@@ -152,13 +197,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             case R.id.by_rating:
 
-                movieList = new ArrayList<>();
+                currentPage = 1;
+                currentCategory = SortType.TOP_RATED;
+                movieList.clear();
                 getTopRatedMovies();
 
                 return true;
 
             case R.id.by_popularity:
-                movieList = new ArrayList<>();
+
+                currentPage = 1;
+                currentCategory = SortType.POPULAR;
+                movieList.clear();
                 getPopularMovies();
                 return true;
 

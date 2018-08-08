@@ -84,8 +84,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         String image_url = Config.TMDB_IMAGE_URL_PATH + movieList.get(position).getPosterPath();
         Picasso.with(context)
                 .load(image_url)
-                .placeholder(android.R.mipmap.sym_def_app_icon)
-                .error(android.R.mipmap.sym_def_app_icon)
+                .placeholder(R.drawable.loader)
+                .error(R.drawable.errorr)
                 .into(holder.movieImage);
 
 

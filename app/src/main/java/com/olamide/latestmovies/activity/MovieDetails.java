@@ -54,8 +54,8 @@ public class MovieDetails extends AppCompatActivity {
         String image_url = Config.TMDB_IMAGE_URL_PATH +movie.getPosterPath();
         Picasso.with(this)
                 .load(image_url)
-                .placeholder(android.R.mipmap.sym_def_app_icon)
-                .error(android.R.mipmap.sym_def_app_icon)
+                .placeholder(R.drawable.loader)
+                .error(R.drawable.errorr)
                 .into(ivPoster);
 
 

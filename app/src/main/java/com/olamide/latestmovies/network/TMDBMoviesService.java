@@ -7,12 +7,12 @@ import retrofit2.Callback;
 public class TMDBMoviesService {
 
 
-    public static void getMoviesByTopRated(String apiKey, Callback<TMDBMovieResponse> movieResponseCallback){
-        RetrofitBuilder.getMoviesApi().getMoviesByTopRated(apiKey).enqueue(movieResponseCallback);
+    public static void getMoviesByTopRated(String apiKey,int page, Callback<TMDBMovieResponse> movieResponseCallback){
+        RetrofitBuilder.getMoviesApi().getMoviesByTopRated(apiKey,  page).enqueue(movieResponseCallback);
     }
 
-    public static void getMoviesBypopularity(String apiKey, Callback<TMDBMovieResponse> callBack){
-        RetrofitBuilder.getMoviesApi().getMoviesBypopularity(apiKey).enqueue(callBack);
+    public static void getMoviesBypopularity(String apiKey, int page, Callback<TMDBMovieResponse> callBack){
+        RetrofitBuilder.getMoviesApi().getMoviesBypopularity(apiKey, page).enqueue(callBack);
     }
 
 
