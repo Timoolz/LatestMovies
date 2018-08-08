@@ -3,6 +3,7 @@ package com.olamide.latestmovies.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import com.olamide.latestmovies.adapter.MovieAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.TMDBMovieResponse;
 import com.olamide.latestmovies.network.TMDBMoviesService;
+import com.olamide.latestmovies.utils.RecyclerViewUtils;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -37,9 +39,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private List<Movie> movieList;
 
     private MovieAdapter mAdapter;
+    GridLayoutManager layoutManager;
 
 
-    // variables to help with pagination
+
+
     private int current_page = 1;
     private int total_pages = 1;
 
@@ -54,6 +58,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+
+        int spanCount = RecyclerViewUtils.getSpanCount(mRecyclerView, this.getResources().getDimension(R.dimen.movie_layout_width));
+
+        layoutManager = new GridLayoutManager(this, spanCount);
+        mRecyclerView.setLayoutManager(layoutManager);
 
         mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
 
