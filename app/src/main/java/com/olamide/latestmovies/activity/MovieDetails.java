@@ -47,7 +47,7 @@ public class MovieDetails extends AppCompatActivity {
     private void populateMovie(){
 
         tvTitle.setText(movie.getTitle());
-        tvDate.setText(movie.getReleaseDate());
+        tvDate.setText(movie.getReleaseDate().substring(0,4));
         tvRatings.setText(Double.toString(movie.getVoteAverage()) + "/10");
         tvSynopsis.setText(movie.getOverview());
 
