@@ -50,6 +50,14 @@
                     android:id="@+id/tv_date"
                     android:gravity="center"
                     android:layout_gravity="center"/>
+
+                <Button
+                    android:layout_marginTop="5dp"
+                    android:padding="2dp"
+                    style="@style/RtlUnderlay.Widget.AppCompat.ActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bt_favourite"/>
             </LinearLayout>
         </LinearLayout>
 
