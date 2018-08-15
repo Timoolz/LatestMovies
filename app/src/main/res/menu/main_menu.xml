@@ -14,4 +14,10 @@
         android:title="@string/sort_by_rating"
         />
 
+    <item
+        android:id="@+id/by_favourite"
+        android:orderInCategory="3"
+        android:title="@string/sort_by_favourite"
+        />
+
 </menu>

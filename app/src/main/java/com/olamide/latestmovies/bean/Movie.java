@@ -1,23 +1,32 @@
 package com.olamide.latestmovies.bean;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+import com.olamide.latestmovies.database.Converters;
 
+import java.util.Date;
 import java.util.List;
 
+@Entity(tableName = "movie")
 public class Movie implements Parcelable {
 
+    @ColumnInfo(name = "vote_count")
     @SerializedName("vote_count")
     private Integer voteCount;
 
+    @PrimaryKey()
     @SerializedName("id")
     private Integer id;
 
     @SerializedName("video")
     private Boolean video;
 
+    @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     private Double voteAverage;
 
@@ -27,18 +36,23 @@ public class Movie implements Parcelable {
     @SerializedName("popularity")
     private Double popularity;
 
+    @ColumnInfo(name = "poster_path")
     @SerializedName("poster_path")
     private String posterPath;
 
+    @ColumnInfo(name = "original_language")
     @SerializedName("original_language")
     private String originalLanguage;
 
+    @ColumnInfo(name = "original_title")
     @SerializedName("original_title")
     private String originalTitle;
 
+    @ColumnInfo(name = "genre_ids")
     @SerializedName("genre_ids")
     private List<Integer> genreIds;
 
+    @ColumnInfo(name = "backdrop_path")
     @SerializedName("backdrop_path")
     private String backdropPath;
 
@@ -48,8 +62,12 @@ public class Movie implements Parcelable {
     @SerializedName("overview")
     private String overview;
 
+    @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     private String releaseDate;
+
+    @ColumnInfo(name = "created_at")
+    private Date createdAt;
 
 
 
@@ -165,6 +183,13 @@ public class Movie implements Parcelable {
         this.backdropPath = backdropPath;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @Override
     public int describeContents() {
@@ -188,6 +213,10 @@ public class Movie implements Parcelable {
         dest.writeString(originalTitle);
         dest.writeString(releaseDate);
         dest.writeByte((byte) (adult ? 1 : 0));
+        if(createdAt!=null){
+            dest.writeLong(Converters.toTimestamp(createdAt));
+        }
+
 
 
     }
@@ -211,6 +240,7 @@ public class Movie implements Parcelable {
             mMovie.originalTitle = source.readString();
             mMovie.setReleaseDate(source.readString());
             mMovie.adult = source.readByte() !=0;
+            mMovie.createdAt = Converters.toDate(source.readLong());
 
             return  mMovie;
         }
