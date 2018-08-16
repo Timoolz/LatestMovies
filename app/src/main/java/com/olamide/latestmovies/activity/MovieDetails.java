@@ -2,13 +2,18 @@ package com.olamide.latestmovies.activity;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
@@ -37,6 +42,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.olamide.latestmovies.Config.YOUTUBE_BASE_URL;
+
 public class MovieDetails extends AppCompatActivity {
 
     private static final String TAG = MovieDetails.class.getSimpleName();
@@ -58,6 +65,12 @@ public class MovieDetails extends AppCompatActivity {
 
     @BindView(R.id.bt_favourite)
     Button btFavourite;
+
+    @BindView(R.id.ib_trailer)
+    ImageButton btTrailer;
+
+    @BindView(R.id.rv_reviews)
+    RecyclerView rvReviews;
 
     private Movie movie;
 
@@ -128,6 +141,20 @@ public class MovieDetails extends AppCompatActivity {
                 .into(ivPoster);
 
 
+    }
+
+
+    @OnClick(R.id.ib_trailer)
+    public void watchTrailer(){
+
+        if (mTrailer != null) {
+            Intent intent = new Intent (Intent.ACTION_VIEW, Uri.parse(YOUTUBE_BASE_URL+mTrailer.getKey()));
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Trailer Unavailable please try again", Toast.LENGTH_SHORT).show();
+            fetchTrailers();
+        }
     }
 
     @OnClick(R.id.bt_favourite)

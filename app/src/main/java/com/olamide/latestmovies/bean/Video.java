@@ -23,10 +23,10 @@ public class Video {
     private String site;
 
     @SerializedName("iso_639_1")
-    private Integer iso_639_1;
+    private String iso_639_1;
 
     @SerializedName("iso_3166_1")
-    private Integer iso_3166_1;
+    private String iso_3166_1;
 
 
     public String getId() {
@@ -77,19 +77,19 @@ public class Video {
         this.site = site;
     }
 
-    public Integer getIso_639_1() {
+    public String getIso_639_1() {
         return iso_639_1;
     }
 
-    public void setIso_639_1(Integer iso_639_1) {
+    public void setIso_639_1(String iso_639_1) {
         this.iso_639_1 = iso_639_1;
     }
 
-    public Integer getIso_3166_1() {
+    public String getIso_3166_1() {
         return iso_3166_1;
     }
 
-    public void setIso_3166_1(Integer iso_3166_1) {
+    public void setIso_3166_1(String iso_3166_1) {
         this.iso_3166_1 = iso_3166_1;
     }
 }

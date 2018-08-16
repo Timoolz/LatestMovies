@@ -8,4 +8,5 @@
     <string name="error">An error has occurred </string>
     <string name="add_favourite">Mark as Favourite</string>
     <string name="remove_favourite">Remove as Favourite</string>
+    <string name="review_string">Reviews</string>
 </resources>
