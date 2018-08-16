@@ -9,22 +9,33 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
 import com.olamide.latestmovies.bean.Movie;
+import com.olamide.latestmovies.bean.Review;
+import com.olamide.latestmovies.bean.TMDBReviewResponse;
+import com.olamide.latestmovies.bean.TMDBVideoResponse;
+import com.olamide.latestmovies.bean.Video;
 import com.olamide.latestmovies.database.LatestMoviesDatabase;
 import com.olamide.latestmovies.utils.AppExecutors;
+import com.olamide.latestmovies.utils.network.TMDBMoviesService;
 import com.olamide.latestmovies.viewmodels.MovieViewModel;
 import com.olamide.latestmovies.viewmodels.MovieViewModelFactory;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MovieDetails extends AppCompatActivity {
 
@@ -50,10 +61,27 @@ public class MovieDetails extends AppCompatActivity {
 
     private Movie movie;
 
-    //private String favouriteText;
-    private boolean favouriteMovie = false;
 
+
+    private boolean favouriteMovie;
     private LatestMoviesDatabase mDb;
+
+    private Video mTrailer;
+
+    private List<Review> mReviews = new ArrayList<>();
+
+
+    // to help regulate loading of more items
+    private boolean loading = false;
+    private int previousItems;
+    private int visibleItemCount;
+    private int totalItemCount;
+
+
+    private int currentPage = 1;
+    private int totalPages = 1;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +96,6 @@ public class MovieDetails extends AppCompatActivity {
 
 
         checkFavourite();
-
         if(favouriteMovie){
             //favouriteText = this.getResources().getString(R.string.remove_favourite);
             btFavourite.setText(R.string.remove_favourite);
@@ -77,6 +104,8 @@ public class MovieDetails extends AppCompatActivity {
             btFavourite.setText(R.string.add_favourite);
         }
 
+        fetchReviews();
+        fetchTrailers();
         populateMovie();
 
 
@@ -175,6 +204,63 @@ public class MovieDetails extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    public void fetchTrailers(){
+
+
+        TMDBMoviesService.getTrailersByMovieId( movie.getId(), Config.TMDB_API_KEY, new Callback<TMDBVideoResponse>() {
+            @Override
+            public void onResponse(Call<TMDBVideoResponse> call, Response<TMDBVideoResponse> response) {
+                Log.e(TAG, call.request().toString());
+
+                Log.e(TAG, ReflectionToStringBuilder.toString(response));
+
+                for (Video video : response.body().getResults()) {
+
+                    if (video.getType().equals("Trailer")) {
+                        mTrailer = video;
+                        break;
+                    }
+                    else if (video.getType() == "Clip") {
+                        mTrailer = video;
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<TMDBVideoResponse> call, Throwable t) {
+
+                Log.e(TAG, "ERROR  " +t.toString());
+            }
+        });
+
+
+    }
+
+    public void fetchReviews(){
+
+        TMDBMoviesService.getReviewsByMovieId(movie.getId(),Config.TMDB_API_KEY, currentPage, new Callback<TMDBReviewResponse>() {
+            @Override
+            public void onResponse(Call<TMDBReviewResponse> call, Response<TMDBReviewResponse> response) {
+                Log.e(TAG, call.request().toString());
+
+                Log.e(TAG, ReflectionToStringBuilder.toString(response));
+                totalPages = response.body().getTotalPages();
+                mReviews.addAll(response.body().getResults());
+
+                //mAdapter.setMovieList(movieList);
+
+            }
+
+            @Override
+            public void onFailure(Call<TMDBReviewResponse> call, Throwable t) {
+
+                Log.e(TAG, "ERROR  " +t.toString());
+            }
+        });
 
     }
 

@@ -19,9 +19,9 @@ public interface TMDBMoviesAPI {
     Call<TMDBMovieResponse> getMoviesBypopularity(@Query("api_key") String apiKey, @Query("page") int page);
 
     @GET("movie/{id}/videos")
-    Call<TMDBVideoResponse> getTrailersByMovieId(@Path("id") String id, @Query("api_key") String apiKey, @Query("page") int page);
+    Call<TMDBVideoResponse> getTrailersByMovieId(@Path("id") Integer id, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
-    Call<TMDBReviewResponse> getReviewsByMovieId(@Path("id") String id, @Query("api_key") String apiKey, @Query("page") int page);
+    Call<TMDBReviewResponse> getReviewsByMovieId(@Path("id") Integer id, @Query("api_key") String apiKey, @Query("page") int page);
 
 }
