@@ -67,6 +67,7 @@
             android:id="@+id/tv_synopsis"
             android:gravity="center"
             android:layout_gravity="center"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:padding="4dp"/>
 
 
@@ -87,15 +88,17 @@
             android:id="@+id/tv_reviews"
             android:gravity="center"
             android:padding="4dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:text="@string/review_string"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
             android:id="@+id/rv_reviews"></android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
-
 
 </ScrollView>

@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
+import com.olamide.latestmovies.adapter.ReviewAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.Review;
 import com.olamide.latestmovies.bean.TMDBReviewResponse;
@@ -42,9 +46,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 import static com.olamide.latestmovies.Config.YOUTUBE_BASE_URL;
 
-public class MovieDetails extends AppCompatActivity {
+public class MovieDetails extends AppCompatActivity implements ReviewAdapter.ReviewAdapterOnClickListener {
 
     private static final String TAG = MovieDetails.class.getSimpleName();
 
@@ -83,12 +88,8 @@ public class MovieDetails extends AppCompatActivity {
 
     private List<Review> mReviews = new ArrayList<>();
 
-
-    // to help regulate loading of more items
-    private boolean loading = false;
-    private int previousItems;
-    private int visibleItemCount;
-    private int totalItemCount;
+    private ReviewAdapter reviewAdapter;
+    private LinearLayoutManager layoutManager;
 
 
     private int currentPage = 1;
@@ -108,6 +109,9 @@ public class MovieDetails extends AppCompatActivity {
         mDb = LatestMoviesDatabase.getInstance(getApplicationContext());
 
 
+        layoutManager = new LinearLayoutManager(this);
+        rvReviews.setLayoutManager(layoutManager);
+
         checkFavourite();
         if(favouriteMovie){
             //favouriteText = this.getResources().getString(R.string.remove_favourite);
@@ -116,6 +120,12 @@ public class MovieDetails extends AppCompatActivity {
             //favouriteText = this.getResources().getString(R.string.add_favourite);
             btFavourite.setText(R.string.add_favourite);
         }
+
+        reviewAdapter = new ReviewAdapter(mReviews,  getApplicationContext(), this);
+        rvReviews.setAdapter(reviewAdapter);
+        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+        rvReviews.addItemDecoration(decoration);
+
 
         fetchReviews();
         fetchTrailers();
@@ -278,7 +288,7 @@ public class MovieDetails extends AppCompatActivity {
                 totalPages = response.body().getTotalPages();
                 mReviews.addAll(response.body().getResults());
 
-                //mAdapter.setMovieList(movieList);
+                reviewAdapter.setReviewList(mReviews);
 
             }
 
@@ -292,4 +302,8 @@ public class MovieDetails extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onClickListener(Review review) {
+
+    }
 }
