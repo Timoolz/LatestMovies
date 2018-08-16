@@ -1,4 +1,4 @@
-package com.olamide.latestmovies.network;
+package com.olamide.latestmovies.utils.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

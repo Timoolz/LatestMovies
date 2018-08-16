@@ -1,4 +1,4 @@
-package com.olamide.latestmovies.network;
+package com.olamide.latestmovies.utils.network;
 
 import com.olamide.latestmovies.bean.TMDBMovieResponse;
 import com.olamide.latestmovies.bean.TMDBReviewResponse;

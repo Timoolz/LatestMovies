@@ -1,6 +1,9 @@
 package com.olamide.latestmovies.activity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,8 +18,9 @@ import com.olamide.latestmovies.SortType;
 import com.olamide.latestmovies.adapter.MovieAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.TMDBMovieResponse;
-import com.olamide.latestmovies.network.TMDBMoviesService;
+import com.olamide.latestmovies.utils.network.TMDBMoviesService;
 import com.olamide.latestmovies.utils.RecyclerViewUtils;
+import com.olamide.latestmovies.viewmodels.MainViewModel;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -68,7 +72,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         layoutManager = new GridLayoutManager(this, spanCount);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
+
+        if (savedInstanceState != null) {
+            String category;
+            category = savedInstanceState.getString("currentCategory");
+            if (category.equals(SortType.POPULAR.toString())) {
+                currentCategory = SortType.POPULAR;
+            } else if (category.equals(SortType.TOP_RATED.toString())) {
+                currentCategory = SortType.TOP_RATED;
+            } else if (category.equals(SortType.FAVOURITE.toString())) {
+                currentCategory = SortType.FAVOURITE;
+            }
+        }
+
 
 
         if(currentCategory.equals(SortType.POPULAR)){
@@ -77,6 +93,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         else if(currentCategory.equals(SortType.TOP_RATED)) {
             getTopRatedMovies();
         }
+        else if(currentCategory.equals(SortType.FAVOURITE)){
+            getFavouriteMovies();
+        }
+
+        mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
+
 
         mRecyclerView.setAdapter(mAdapter);
 
@@ -101,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                                 else if(currentCategory.equals(SortType.TOP_RATED)) {
                                     getTopRatedMovies();
                                 }
+                                else if(currentCategory.equals(SortType.FAVOURITE)){
+                                    getFavouriteMovies();
+                                }
                             }
                         }
                         loading = false;
@@ -115,6 +140,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("currentCategory", currentCategory.toString());
+    }
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String category;
+        category = savedInstanceState.getString("currentCategory");
+        if (category.equals(SortType.POPULAR.toString())) {
+            currentCategory = SortType.POPULAR;
+        } else if (category.equals(SortType.TOP_RATED.toString())) {
+            currentCategory = SortType.TOP_RATED;
+        } else if (category.equals(SortType.FAVOURITE.toString())) {
+            currentCategory = SortType.FAVOURITE;
+        }
+
+    }
 
 
     public void getPopularMovies(){
@@ -130,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 movieList.addAll(response.body().getResults());
 
                 mAdapter.setMovieList(movieList);
+
 
 
 
@@ -168,6 +215,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             }
         });
 
+    }
+
+
+    private void getFavouriteMovies() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(@Nullable List<Movie> favMovies) {
+                Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
+                mAdapter.setMovieList(favMovies);
+            }
+        });
     }
 
 
@@ -213,6 +272,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 return true;
 
 
+            case R.id.by_favourite:
+
+                currentCategory = SortType.FAVOURITE;
+                getFavouriteMovies();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
