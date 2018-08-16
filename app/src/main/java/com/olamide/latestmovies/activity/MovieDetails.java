@@ -113,12 +113,24 @@ public class MovieDetails extends AppCompatActivity {
                     mDb.movieDao().deleteMovie(movie);
                     Log.e(TAG,"Successfully removed this movie from favourite  ");
                     favouriteMovie = false;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            btFavourite.setText(R.string.add_favourite);
+                        }
+                    });
+
                 }else {
                     // Add favourite
                     movie.setCreatedAt(new Date());
                     mDb.movieDao().insertMovie(movie);
                     Log.e(TAG,"Successfully added this movie from favourite  ");
                     favouriteMovie = true;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            btFavourite.setText(R.string.remove_favourite);
+                        }
+                    });
+
                 }
 
                 //finish();
@@ -144,8 +156,20 @@ public class MovieDetails extends AppCompatActivity {
 
                 if(favMovie != null){
                     favouriteMovie = true;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            btFavourite.setText(R.string.remove_favourite);
+                        }
+                    });
+
                 }else {
                     favouriteMovie = false;
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            btFavourite.setText(R.string.add_favourite);
+                        }
+                    });
+
                 }
 
             }

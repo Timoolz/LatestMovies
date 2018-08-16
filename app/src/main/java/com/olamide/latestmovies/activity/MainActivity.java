@@ -177,9 +177,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                 mAdapter.setMovieList(movieList);
 
-
-
-
             }
 
             @Override
