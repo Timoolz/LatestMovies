@@ -52,6 +52,7 @@ import static com.olamide.latestmovies.Config.YOUTUBE_BASE_URL;
 public class MovieDetails extends AppCompatActivity implements ReviewAdapter.ReviewAdapterOnClickListener {
 
     private static final String TAG = MovieDetails.class.getSimpleName();
+    public static final String LOAD_REVIEW_OBJECT = "reviewToLoad";
 
     @BindView(R.id.tv_title)
     TextView tvTitle;
@@ -304,6 +305,11 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
 
     @Override
     public void onClickListener(Review review) {
+
+        Intent intent = new Intent(this, ReviewDetails.class);
+        intent.putExtra(LOAD_REVIEW_OBJECT, review);
+
+        startActivity(intent);
 
     }
 }

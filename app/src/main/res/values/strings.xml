@@ -9,4 +9,6 @@
     <string name="add_favourite">Mark as Favourite</string>
     <string name="remove_favourite">Remove as Favourite</string>
     <string name="review_string">Reviews</string>
+    <string name="review_online">View Online</string>
+
 </resources>
