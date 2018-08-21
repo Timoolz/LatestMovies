@@ -5,7 +5,7 @@
     <string name="sort_by_favourite">My Favourite</string>
     <string name="refresh">Refresh</string>
     <string name="favourite">Favourite</string>
-    <string name="error">An error has occurred </string>
+    <string name="internet_error">Action requires network connection.  Connect to the Internet and try Again </string>
     <string name="add_favourite">Mark as Favourite</string>
     <string name="remove_favourite">Remove as Favourite</string>
     <string name="review_string">Reviews</string>

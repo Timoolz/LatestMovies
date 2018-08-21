@@ -9,12 +9,17 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
-import com.olamide.latestmovies.SortType;
+import com.olamide.latestmovies.enums.ConnectionStatus;
+import com.olamide.latestmovies.enums.SortType;
 import com.olamide.latestmovies.adapter.MovieAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.TMDBMovieResponse;
@@ -33,6 +38,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.olamide.latestmovies.utils.network.ConnectionUtils.getConnectionStatus;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickListener{
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -40,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @BindView(R.id.rv_movies)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.tv_error)
+    TextView tvError;
 
     private List<Movie> movieList = new ArrayList<>();
 
@@ -99,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
 
-
+        mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -165,6 +175,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     public void getPopularMovies(){
 
+        ConnectionStatus connectionStatus = getConnectionStatus(getApplicationContext());
+        if(connectionStatus.equals(ConnectionStatus.NONE)){
+            if(movieList.size()<=0){
+                showErrorMessage();
+            }else {
+                Toast.makeText(this, R.string.internet_error , Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
 
         TMDBMoviesService.getMoviesBypopularity(Config.TMDB_API_KEY, currentPage, new Callback<TMDBMovieResponse>() {
             @Override
@@ -175,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 totalPages = response.body().getTotalPages();
                 movieList.addAll(response.body().getResults());
 
+                showViewLayout();
                 mAdapter.setMovieList(movieList);
 
             }
@@ -191,6 +212,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     public void getTopRatedMovies(){
 
+        ConnectionStatus connectionStatus = getConnectionStatus(getApplicationContext());
+        if(connectionStatus.equals(ConnectionStatus.NONE)){
+            if(movieList.size()<=0){
+                showErrorMessage();
+            }else {
+                Toast.makeText(this, R.string.internet_error , Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
 
         TMDBMoviesService.getMoviesByTopRated(Config.TMDB_API_KEY, currentPage, new Callback<TMDBMovieResponse>() {
             @Override
@@ -201,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 totalPages = response.body().getTotalPages();
                 movieList.addAll(response.body().getResults());
 
+                showViewLayout();
                 mAdapter.setMovieList(movieList);
 
             }
@@ -221,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             @Override
             public void onChanged(@Nullable List<Movie> favMovies) {
                 Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
+                showViewLayout();
                 mAdapter.setMovieList(favMovies);
             }
         });
@@ -237,6 +270,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
+
+    private void showErrorMessage() {
+        tvError.setGravity(Gravity.CENTER);
+        tvError.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+    }
+
+    private void showViewLayout() {
+        tvError.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
