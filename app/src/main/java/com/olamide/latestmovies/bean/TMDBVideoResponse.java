@@ -16,7 +16,7 @@ public class TMDBVideoResponse {
     private int totalPages;
 
     @SerializedName("results")
-    private List<Video> results;
+    private List<Trailer> results;
 
     public int getPage() {
         return page;
@@ -42,11 +42,11 @@ public class TMDBVideoResponse {
         this.totalPages = totalPages;
     }
 
-    public List<Video> getResults() {
+    public List<Trailer> getResults() {
         return results;
     }
 
-    public void setResults(List<Video> results) {
+    public void setResults(List<Trailer> results) {
         this.results = results;
     }
 

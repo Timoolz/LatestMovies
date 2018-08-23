@@ -81,7 +81,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
 
-        String image_url = Config.TMDB_IMAGE_URL_PATH + movieList.get(position).getPosterPath();
+        String image_url = Config.TMDB_IMAGE_URL_PATH + movieList.get(holder.getAdapterPosition()).getPosterPath();
         Picasso.with(context)
                 .load(image_url)
                 .placeholder(R.drawable.loader)

@@ -81,7 +81,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewAdap
     @Override
     public void onBindViewHolder(@NonNull ReviewAdapterViewHolder holder, int position) {
 
-        Review currentReview = reviewList.get(position);
+        Review currentReview = reviewList.get(holder.getAdapterPosition());
 
         String author = currentReview.getAuthor();
         String content = currentReview.getContent();

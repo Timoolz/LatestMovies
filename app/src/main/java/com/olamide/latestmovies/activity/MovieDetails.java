@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,11 +20,12 @@ import android.widget.Toast;
 import com.olamide.latestmovies.Config;
 import com.olamide.latestmovies.R;
 import com.olamide.latestmovies.adapter.ReviewAdapter;
+import com.olamide.latestmovies.adapter.TrailerAdapter;
 import com.olamide.latestmovies.bean.Movie;
 import com.olamide.latestmovies.bean.Review;
 import com.olamide.latestmovies.bean.TMDBReviewResponse;
 import com.olamide.latestmovies.bean.TMDBVideoResponse;
-import com.olamide.latestmovies.bean.Video;
+import com.olamide.latestmovies.bean.Trailer;
 import com.olamide.latestmovies.database.LatestMoviesDatabase;
 import com.olamide.latestmovies.utils.AppExecutors;
 import com.olamide.latestmovies.utils.network.TMDBMoviesService;
@@ -49,7 +49,7 @@ import retrofit2.Response;
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 import static com.olamide.latestmovies.Config.YOUTUBE_BASE_URL;
 
-public class MovieDetails extends AppCompatActivity implements ReviewAdapter.ReviewAdapterOnClickListener {
+public class MovieDetails extends AppCompatActivity implements ReviewAdapter.ReviewAdapterOnClickListener, TrailerAdapter.TrailerAdapterOnClickListener {
 
     private static final String TAG = MovieDetails.class.getSimpleName();
     public static final String LOAD_REVIEW_OBJECT = "reviewToLoad";
@@ -72,11 +72,12 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
     @BindView(R.id.bt_favourite)
     Button btFavourite;
 
-    @BindView(R.id.ib_trailer)
-    ImageButton btTrailer;
 
     @BindView(R.id.rv_reviews)
     RecyclerView rvReviews;
+
+    @BindView(R.id.rv_trailers)
+    RecyclerView rvTrailers;
 
     private Movie movie;
 
@@ -85,12 +86,14 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
     private boolean favouriteMovie;
     private LatestMoviesDatabase mDb;
 
-    private Video mTrailer;
+
+    private List<Trailer> mTrailerList = new ArrayList<>();
+    private TrailerAdapter trailerAdapter;
+    private LinearLayoutManager trailerLayoutManager;
 
     private List<Review> mReviews = new ArrayList<>();
-
     private ReviewAdapter reviewAdapter;
-    private LinearLayoutManager layoutManager;
+    private LinearLayoutManager reviewLayoutManager;
 
 
     private int currentPage = 1;
@@ -110,8 +113,11 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
         mDb = LatestMoviesDatabase.getInstance(getApplicationContext());
 
 
-        layoutManager = new LinearLayoutManager(this);
-        rvReviews.setLayoutManager(layoutManager);
+        reviewLayoutManager = new LinearLayoutManager(this);
+        rvReviews.setLayoutManager(reviewLayoutManager);
+
+        trailerLayoutManager = new LinearLayoutManager(this);
+        rvTrailers.setLayoutManager(trailerLayoutManager);
 
         checkFavourite();
         if(favouriteMovie){
@@ -126,6 +132,10 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
         rvReviews.setAdapter(reviewAdapter);
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
         rvReviews.addItemDecoration(decoration);
+
+
+        trailerAdapter = new TrailerAdapter(mTrailerList, getApplicationContext(), this);
+        rvTrailers.setAdapter(trailerAdapter);
 
 
         fetchReviews();
@@ -155,18 +165,6 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
     }
 
 
-    @OnClick(R.id.ib_trailer)
-    public void watchTrailer(){
-
-        if (mTrailer != null) {
-            Intent intent = new Intent (Intent.ACTION_VIEW, Uri.parse(YOUTUBE_BASE_URL+mTrailer.getKey()));
-            startActivity(intent);
-        }
-        else {
-            Toast.makeText(this, "Trailer Unavailable please try again", Toast.LENGTH_SHORT).show();
-            fetchTrailers();
-        }
-    }
 
     @OnClick(R.id.bt_favourite)
     public void setFavourite(){
@@ -255,16 +253,8 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
 
                 Log.e(TAG, ReflectionToStringBuilder.toString(response));
 
-                for (Video video : response.body().getResults()) {
-
-                    if (video.getType().equals("Trailer")) {
-                        mTrailer = video;
-                        break;
-                    }
-                    else if (video.getType() == "Clip") {
-                        mTrailer = video;
-                    }
-                }
+                mTrailerList = response.body().getResults();
+                trailerAdapter.setTrailerList(mTrailerList);
 
             }
 
@@ -310,6 +300,21 @@ public class MovieDetails extends AppCompatActivity implements ReviewAdapter.Rev
         intent.putExtra(LOAD_REVIEW_OBJECT, review);
 
         startActivity(intent);
+
+    }
+
+    @Override
+    public void onTrailerClickListener(Trailer trailer) {
+
+        if (mTrailerList != null) {
+            Intent intent = new Intent (Intent.ACTION_VIEW, Uri.parse(YOUTUBE_BASE_URL+trailer.getKey()));
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Trailer Unavailable please try again", Toast.LENGTH_SHORT).show();
+            fetchTrailers();
+        }
+
 
     }
 }

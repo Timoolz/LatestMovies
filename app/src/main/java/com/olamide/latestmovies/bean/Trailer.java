@@ -2,7 +2,7 @@ package com.olamide.latestmovies.bean;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Video {
+public class Trailer {
 
     @SerializedName("id")
     private String id;
