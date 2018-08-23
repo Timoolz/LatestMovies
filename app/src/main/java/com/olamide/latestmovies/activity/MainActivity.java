@@ -68,13 +68,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private int currentPage = 1;
     private int totalPages = 1;
 
-    private SortType currentCategory = SortType.POPULAR;
+    private SortType currentCategory = new SortType(SortType.POPULAR);
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.e(TAG, " create currentCategory : " + currentCategory);
+
+        Log.e(TAG, " item currentCategory : " + SortType.POPULAR);
 
         ButterKnife.bind(this);
 
@@ -87,24 +91,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (savedInstanceState != null) {
             String category;
             category = savedInstanceState.getString(STRING_CURRENT_CATEGORY);
-            if (category.equals(SortType.POPULAR.toString())) {
-                currentCategory = SortType.POPULAR;
-            } else if (category.equals(SortType.TOP_RATED.toString())) {
-                currentCategory = SortType.TOP_RATED;
-            } else if (category.equals(SortType.FAVOURITE.toString())) {
-                currentCategory = SortType.FAVOURITE;
+            if (category.equals(SortType.POPULAR)) {
+                currentCategory = new SortType( SortType.POPULAR);
+            } else if (category.equals(SortType.TOP_RATED)) {
+                currentCategory = new SortType( SortType.TOP_RATED);
+            } else if (category.equals(SortType.FAVOURITE)) {
+                currentCategory = new SortType( SortType.FAVOURITE);
             }
+
+            Log.e(TAG, " saved instance currentCategory : " + currentCategory);
         }
 
 
 
-        if(currentCategory.equals(SortType.POPULAR)){
+        if(currentCategory.sortType.equals(SortType.POPULAR)){
             getPopularMovies();
         }
-        else if(currentCategory.equals(SortType.TOP_RATED)) {
+        else if(currentCategory.sortType.equals(SortType.TOP_RATED)) {
             getTopRatedMovies();
         }
-        else if(currentCategory.equals(SortType.FAVOURITE)){
+        else if(currentCategory.sortType.equals(SortType.FAVOURITE)){
             getFavouriteMovies();
         }
 
@@ -128,15 +134,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                             if (currentPage < totalPages) {
                                 currentPage++;
-                                if(currentCategory.equals(SortType.POPULAR)){
+                                if(currentCategory.sortType.equals(SortType.POPULAR)){
                                     getPopularMovies();
                                 }
-                                else if(currentCategory.equals(SortType.TOP_RATED)) {
+                                else if(currentCategory.sortType.equals(SortType.TOP_RATED)) {
                                     getTopRatedMovies();
                                 }
-                                else if(currentCategory.equals(SortType.FAVOURITE)){
+                                else if(currentCategory.sortType.equals(SortType.FAVOURITE)){
                                     getFavouriteMovies();
                                 }
+
+                                Log.e(TAG, "Scroll  currentCategory : " + currentCategory);
                             }
                         }
                         loading = false;
@@ -154,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(STRING_CURRENT_CATEGORY, currentCategory.toString());
+        outState.putString(STRING_CURRENT_CATEGORY, currentCategory.sortType);
     }
 
 
@@ -163,21 +171,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onRestoreInstanceState(savedInstanceState);
         String category;
         category = savedInstanceState.getString(STRING_CURRENT_CATEGORY);
-        if (category.equals(SortType.POPULAR.toString())) {
-            currentCategory = SortType.POPULAR;
-        } else if (category.equals(SortType.TOP_RATED.toString())) {
-            currentCategory = SortType.TOP_RATED;
-        } else if (category.equals(SortType.FAVOURITE.toString())) {
-            currentCategory = SortType.FAVOURITE;
+        if (category.equals(SortType.POPULAR)) {
+            currentCategory = new SortType( SortType.POPULAR);
+        } else if (category.equals(SortType.TOP_RATED)) {
+            currentCategory = new SortType(  SortType.TOP_RATED);
+        } else if (category.equals(SortType.FAVOURITE)) {
+            currentCategory = new SortType( SortType.FAVOURITE);
         }
 
+        Log.e(TAG, " restore currentCategory : " + currentCategory);
     }
 
 
     public void getPopularMovies(){
 
         ConnectionStatus connectionStatus = getConnectionStatus(getApplicationContext());
-        if(connectionStatus.equals(ConnectionStatus.NONE)){
+        if(connectionStatus.connectionStatus.equals(ConnectionStatus.NONE)){
             if(movieList.size()<=0){
                 showErrorMessage();
             }else {
@@ -214,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public void getTopRatedMovies(){
 
         ConnectionStatus connectionStatus = getConnectionStatus(getApplicationContext());
-        if(connectionStatus.equals(ConnectionStatus.NONE)){
+        if(connectionStatus.connectionStatus.equals(ConnectionStatus.NONE)){
             if(movieList.size()<=0){
                 showErrorMessage();
             }else {
@@ -299,7 +308,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             case R.id.by_rating:
 
                 currentPage = 1;
-                currentCategory = SortType.TOP_RATED;
+                currentCategory = new SortType(SortType.TOP_RATED);
+
+                Log.e(TAG, " item currentCategory : " + currentCategory.sortType);
                 movieList.clear();
                 getTopRatedMovies();
 
@@ -308,7 +319,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             case R.id.by_popularity:
 
                 currentPage = 1;
-                currentCategory = SortType.POPULAR;
+                currentCategory = new SortType(SortType.POPULAR);
+
+                Log.e(TAG, " item currentCategory : " + currentCategory.sortType);
                 movieList.clear();
                 getPopularMovies();
                 return true;
@@ -316,7 +329,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             case R.id.by_favourite:
 
-                currentCategory = SortType.FAVOURITE;
+                currentCategory = new SortType(SortType.FAVOURITE);
+
+                Log.e(TAG, " item currentCategory : " + currentCategory.sortType);
                 getFavouriteMovies();
                 return true;
         }

@@ -25,13 +25,13 @@ public class ConnectionUtils {
 
             boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
             if(isWiFi){
-                return ConnectionStatus.WIFI;
+                return  new  ConnectionStatus(ConnectionStatus.WIFI);
             }
             else {
-                return ConnectionStatus.MOBILE;
+                return new  ConnectionStatus(ConnectionStatus.MOBILE);
             }
         }else {
-            return ConnectionStatus.NONE;
+            return new  ConnectionStatus(ConnectionStatus.NONE);
         }
 
 
