@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String VIEW_MOVIE_OBJECT = "movieToView";
+    private static final String STRING_CURRENT_CATEGORY = "currentCategory";
 
     @BindView(R.id.rv_movies)
     RecyclerView mRecyclerView;
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         if (savedInstanceState != null) {
             String category;
-            category = savedInstanceState.getString("currentCategory");
+            category = savedInstanceState.getString(STRING_CURRENT_CATEGORY);
             if (category.equals(SortType.POPULAR.toString())) {
                 currentCategory = SortType.POPULAR;
             } else if (category.equals(SortType.TOP_RATED.toString())) {
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("currentCategory", currentCategory.toString());
+        outState.putString(STRING_CURRENT_CATEGORY, currentCategory.toString());
     }
 
 
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         String category;
-        category = savedInstanceState.getString("currentCategory");
+        category = savedInstanceState.getString(STRING_CURRENT_CATEGORY);
         if (category.equals(SortType.POPULAR.toString())) {
             currentCategory = SortType.POPULAR;
         } else if (category.equals(SortType.TOP_RATED.toString())) {
