@@ -7,8 +7,12 @@ import android.util.Log;
 
 import com.olamide.latestmovies.enums.ConnectionStatus;
 
-public class ConnectionUtils {
+public final class ConnectionUtils {
     private static final String TAG = ConnectionUtils.class.getSimpleName();
+
+    private ConnectionUtils() {
+
+    }
 
     public static ConnectionStatus getConnectionStatus(Context context){
 

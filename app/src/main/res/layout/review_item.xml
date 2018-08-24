@@ -20,7 +20,7 @@
             android:layout_marginStart="8dp"
             android:gravity="center"
             android:textAlignment="center"
-            android:text="Author:"
+            android:text="@string/review_author"
 
 
             />
@@ -36,6 +36,7 @@
             android:layout_marginStart="8dp"
             android:gravity="center"
             android:textAlignment="center"
+            android:text="@string/app_dummy_text"
 
 
             />

@@ -3,6 +3,7 @@ package com.olamide.latestmovies.activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,7 +45,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String VIEW_MOVIE_OBJECT = "movieToView";
+    private static final String INTEGER_CURRENT_PAGE = "currentPage";
+    private static final String INTEGER_TOTAL_PAGE = "totalPages";
     private static final String STRING_CURRENT_CATEGORY = "currentCategory";
+    private static final String CURRENT_LIST = "currentList";
+    private static final String RECYCLER_VIEW_STATE = "currentState";
 
     @BindView(R.id.rv_movies)
     RecyclerView mRecyclerView;
@@ -69,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private int totalPages = 1;
 
     private SortType currentCategory = new SortType(SortType.POPULAR);
+
+    //To store the Recycler view Current state
+    private Parcelable savedRecyclerLayoutState;
 
 
     @Override
@@ -99,22 +107,43 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 currentCategory = new SortType( SortType.FAVOURITE);
             }
 
-            Log.e(TAG, " saved instance currentCategory : " + currentCategory);
-        }
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE);
+            currentPage = savedInstanceState.getInt(INTEGER_CURRENT_PAGE);
+            totalPages = savedInstanceState.getInt(INTEGER_TOTAL_PAGE);
+
+            movieList = savedInstanceState.<Movie>getParcelableArrayList(CURRENT_LIST);
+            if(movieList!=null){
+                Log.e(TAG, " movieList is NOTT null ");
+                Log.e(TAG, " movieList is size : " + movieList.size());
+            }else {
+                Log.e(TAG, " movieList is  NULL ");
+            }
+            showViewLayout();
 
 
 
-        if(currentCategory.sortType.equals(SortType.POPULAR)){
-            getPopularMovies();
+
+
+            Log.e(TAG, " saved instance state : " + savedRecyclerLayoutState);
+        }else {
+            if(currentCategory.sortType.equals(SortType.POPULAR)){
+                getPopularMovies();
+            }
+            else if(currentCategory.sortType.equals(SortType.TOP_RATED)) {
+                getTopRatedMovies();
+            }
+            else if(currentCategory.sortType.equals(SortType.FAVOURITE)){
+                getFavouriteMovies();
+            }
         }
-        else if(currentCategory.sortType.equals(SortType.TOP_RATED)) {
-            getTopRatedMovies();
-        }
-        else if(currentCategory.sortType.equals(SortType.FAVOURITE)){
-            getFavouriteMovies();
-        }
+
+
 
         mAdapter = new MovieAdapter(movieList,  getApplicationContext(), this);
+        mAdapter.setMovieList(movieList);
+        mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+
+
 
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setAdapter(mAdapter);
@@ -130,10 +159,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
                     if (!loading) {
                         loading = true;
+                        //check if the scroll is at the end of the layout
                         if ((visibleItemCount + previousItems) >= totalItemCount) {
 
                             if (currentPage < totalPages) {
-                                currentPage++;
+
                                 if(currentCategory.sortType.equals(SortType.POPULAR)){
                                     getPopularMovies();
                                 }
@@ -159,16 +189,26 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
 
+
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STRING_CURRENT_CATEGORY, currentCategory.sortType);
+        outState.putParcelable(RECYCLER_VIEW_STATE, mRecyclerView.getLayoutManager().onSaveInstanceState());
+        outState.putInt(INTEGER_CURRENT_PAGE, currentPage);
+        outState.putInt(INTEGER_TOTAL_PAGE, totalPages);
+        outState.putParcelableArrayList(CURRENT_LIST, (ArrayList<? extends Parcelable>) movieList);
+
+
+
     }
 
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
         String category;
         category = savedInstanceState.getString(STRING_CURRENT_CATEGORY);
         if (category.equals(SortType.POPULAR)) {
@@ -178,6 +218,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         } else if (category.equals(SortType.FAVOURITE)) {
             currentCategory = new SortType( SortType.FAVOURITE);
         }
+
+        savedRecyclerLayoutState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE);
+        currentPage = savedInstanceState.getInt(INTEGER_CURRENT_PAGE);
+        totalPages = savedInstanceState.getInt(INTEGER_TOTAL_PAGE);
+        movieList = savedInstanceState.<Movie>getParcelableArrayList(CURRENT_LIST);
+
+
 
         Log.e(TAG, " restore currentCategory : " + currentCategory);
     }
@@ -204,9 +251,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 Log.e(TAG, ReflectionToStringBuilder.toString(response));
                 totalPages = response.body().getTotalPages();
                 movieList.addAll(response.body().getResults());
+                currentPage++;
 
                 showViewLayout();
                 mAdapter.setMovieList(movieList);
+
+
 
             }
 
@@ -241,9 +291,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 Log.e(TAG, ReflectionToStringBuilder.toString(response));
                 totalPages = response.body().getTotalPages();
                 movieList.addAll(response.body().getResults());
+                currentPage++;
 
                 showViewLayout();
                 mAdapter.setMovieList(movieList);
+
 
             }
 
@@ -264,7 +316,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             public void onChanged(@Nullable List<Movie> favMovies) {
                 Log.d(TAG, "Updating list of movies from LiveData in ViewModel");
                 showViewLayout();
+                movieList= favMovies;
                 mAdapter.setMovieList(favMovies);
+
             }
         });
     }

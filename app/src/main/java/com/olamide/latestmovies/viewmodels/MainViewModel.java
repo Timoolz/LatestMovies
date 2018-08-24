@@ -23,7 +23,7 @@ public class MainViewModel extends AndroidViewModel {
         LatestMoviesDatabase database = LatestMoviesDatabase.getInstance(this.getApplication());
         Log.d(TAG, "Actively retrieving the favourite Movies from the DataBase");
 
-            movies = database.movieDao().loadAllMovies();
+        movies = database.movieDao().loadAllMovies();
 
     }
 

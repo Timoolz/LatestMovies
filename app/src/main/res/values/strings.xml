@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">LatestMovies</string>
+    <string name="app_dummy_text">Test String</string>
     <string name="sort_by_popularity">Popular</string>
     <string name="sort_by_rating">Top Rated</string>
     <string name="sort_by_favourite">My Favourite</string>
@@ -10,5 +11,7 @@
     <string name="remove_favourite">Remove as Favourite</string>
     <string name="review_string">Reviews</string>
     <string name="review_online">View Online</string>
+    <string name="review_author">Author : </string>
+
 
 </resources>
